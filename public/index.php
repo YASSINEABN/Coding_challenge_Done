@@ -56,6 +56,11 @@ try {
         $logger
     );
     
+    $metricsCollector = new \AbandonedCart\Infrastructure\Monitoring\MetricsCollector(
+        $redisClient,
+        $logger
+    );
+    
     // Route handling
     if ($requestUri === '/api/cart/add' && $requestMethod === 'POST') {
         $controller = new \AbandonedCart\Presentation\Controller\CartController(
@@ -75,6 +80,12 @@ try {
             $logger
         );
         $controller->getCart($matches[1]);
+    } elseif ($requestUri === '/api/metrics' && $requestMethod === 'GET') {
+        $controller = new \AbandonedCart\Presentation\Controller\MetricsController(
+            $metricsCollector,
+            $logger
+        );
+        $controller->getMetrics();
     } elseif ($requestUri === '/health' && $requestMethod === 'GET') {
         echo json_encode([
             'status' => 'healthy',
