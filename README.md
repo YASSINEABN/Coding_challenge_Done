@@ -37,11 +37,7 @@ php -S localhost:8000 -t public
 php bin/reminder-worker.php
 ```
 
-## 📚 Documentation
 
-- **[SETUP.md](SETUP.md)** - Detailed installation and deployment guide
-- **[API.md](API.md)** - Complete API documentation with examples
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architecture and design principles
 
 ## 🔧 Configuration
 
@@ -68,23 +64,6 @@ REDIS_PORT=6379
 | `/api/metrics` | GET | Get application metrics |
 | `/health` | GET | Health check |
 
-See [API.md](API.md) for complete documentation.
-
-## 🏗️ Architecture
-
-Clean Architecture with 4 layers:
-
-```
-Presentation Layer (Controllers)
-        ↓
-Application Layer (Services)
-        ↓
-Domain Layer (Entities, Interfaces)
-        ↓
-Infrastructure Layer (Redis, Email, Logger)
-```
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design documentation.
 
 ## 🧪 Testing
 
@@ -143,10 +122,3 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design documentation.
 - **DRY**: No code duplication ✅
 - **KISS**: Simple, clear code ✅
 
-## 📝 License
-
-This is a coding challenge project.
-
-## 🤝 Contributing
-
-This is a demonstration project showcasing best practices in PHP development.
