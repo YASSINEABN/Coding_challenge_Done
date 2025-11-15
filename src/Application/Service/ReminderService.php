@@ -73,7 +73,7 @@ class ReminderService
 
         $referenceTime = $cart->getLastReminderAt() ?? $cart->getCreatedAt();
         $timeSinceReference = time() - $referenceTime;
-        $requiredSeconds = $requiredInterval * 3600;
+        $requiredSeconds = $requiredInterval;
 
         return $timeSinceReference >= $requiredSeconds;
     }

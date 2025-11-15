@@ -74,6 +74,12 @@ try {
             $logger
         );
         $controller->finalizeCart();
+    } elseif ($requestUri === '/api/cart/finalize' && $requestMethod === 'GET') {
+        $controller = new \AbandonedCart\Presentation\Controller\CartController(
+            $cartRepository,
+            $logger
+        );
+        $controller->finalizeCartFromLink();
     } elseif (preg_match('#^/api/cart/([a-zA-Z0-9\-]+)$#', $requestUri, $matches) && $requestMethod === 'GET') {
         $controller = new \AbandonedCart\Presentation\Controller\CartController(
             $cartRepository,

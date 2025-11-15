@@ -20,9 +20,9 @@ return [
     ],
     
     'reminders' => [
-        'first_interval_hours' => (int)(getenv('FIRST_REMINDER_HOURS') ?: 24),
-        'second_interval_hours' => (int)(getenv('SECOND_REMINDER_HOURS') ?: 48),
-        'third_interval_hours' => (int)(getenv('THIRD_REMINDER_HOURS') ?: 72),
+        'first_interval_hours' => (int)(getenv('FIRST_REMINDER_SECONDS') ?: getenv('FIRST_REMINDER_HOURS') ?: 24),
+        'second_interval_hours' => (int)(getenv('SECOND_REMINDER_SECONDS') ?: getenv('SECOND_REMINDER_HOURS') ?: 48),
+        'third_interval_hours' => (int)(getenv('THIRD_REMINDER_SECONDS') ?: getenv('THIRD_REMINDER_HOURS') ?: 72),
     ],
     
     'app' => [

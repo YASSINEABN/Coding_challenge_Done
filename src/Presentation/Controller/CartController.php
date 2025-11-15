@@ -146,6 +146,59 @@ class CartController
         }
     }
 
+    public function finalizeCartFromLink(): void
+    {
+        try {
+            $cartId = $_GET['cart_id'] ?? null;
+
+            if (!$cartId) {
+                http_response_code(400);
+                echo json_encode(['error' => 'cart_id parameter is required']);
+                return;
+            }
+
+            $cart = $this->cartRepository->findById($cartId);
+
+            if ($cart === null) {
+                http_response_code(404);
+                echo json_encode(['error' => 'Cart not found']);
+                return;
+            }
+
+            if ($cart->isFinalized()) {
+                http_response_code(200);
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Cart was already finalized',
+                    'cart' => $cart->toArray(),
+                ]);
+                return;
+            }
+
+            $cart->finalize();
+            $this->cartRepository->save($cart);
+
+            $this->logger->info('Cart finalized from email link', [
+                'cart_id' => $cart->getId(),
+                'total_amount' => $cart->getTotalAmount(),
+            ]);
+
+            http_response_code(200);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Thank you! Your order has been completed.',
+                'cart' => $cart->toArray(),
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to finalize cart from link', [
+                'error' => $e->getMessage(),
+            ]);
+
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to finalize cart']);
+        }
+    }
+
     private function validateAddProductInput(?array $input): bool
     {
         if ($input === null) {

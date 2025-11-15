@@ -6,6 +6,8 @@ namespace AbandonedCart\Infrastructure\Email;
 
 use AbandonedCart\Domain\Entity\Cart;
 use AbandonedCart\Infrastructure\Logger\LoggerInterface;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class SmtpEmailService implements EmailServiceInterface
 {
@@ -24,20 +26,43 @@ class SmtpEmailService implements EmailServiceInterface
             $subject = $this->getSubject($reminderNumber);
             $body = $this->getBody($cart, $reminderNumber);
             
-            $headers = [
-                'From: ' . $this->config['from_name'] . ' <' . $this->config['from'] . '>',
-                'Reply-To: ' . $this->config['from'],
-                'X-Mailer: PHP/' . phpversion(),
-                'MIME-Version: 1.0',
-                'Content-Type: text/html; charset=UTF-8',
-            ];
-
-            $success = mail(
-                $cart->getCustomerEmail(),
-                $subject,
-                $body,
-                implode("\r\n", $headers)
-            );
+            $mockMode = getenv('EMAIL_MOCK_MODE') === 'true';
+            
+            if ($mockMode) {
+                echo "\n=== MOCK EMAIL ===";
+                echo "\nTo: {$cart->getCustomerEmail()}";
+                echo "\nSubject: {$subject}";
+                echo "\nCart ID: {$cart->getId()}";
+                echo "\nTotal: \${$cart->getTotalAmount()}";
+                echo "\nReminder: #{$reminderNumber}";
+                echo "\n==================\n";
+                $success = true;
+            } else {
+                $mail = new PHPMailer(true);
+                
+                $mail->isSMTP();
+                $mail->Host = $this->config['smtp']['host'];
+                $mail->Port = $this->config['smtp']['port'];
+                
+                if (!empty($this->config['smtp']['username'])) {
+                    $mail->SMTPAuth = true;
+                    $mail->Username = $this->config['smtp']['username'];
+                    $mail->Password = $this->config['smtp']['password'];
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                } else {
+                    $mail->SMTPAuth = false;
+                    $mail->SMTPAutoTLS = false;
+                }
+                
+                $mail->setFrom($this->config['from'], $this->config['from_name']);
+                $mail->addAddress($cart->getCustomerEmail());
+                $mail->isHTML(true);
+                $mail->Subject = $subject;
+                $mail->Body = $body;
+                $mail->CharSet = 'UTF-8';
+                
+                $success = $mail->send();
+            }
 
             if ($success) {
                 $this->logger->info('Reminder email sent', [
@@ -53,6 +78,12 @@ class SmtpEmailService implements EmailServiceInterface
             }
 
             return $success;
+        } catch (Exception $e) {
+            $this->logger->error('PHPMailer Exception', [
+                'cart_id' => $cart->getId(),
+                'error' => $e->getMessage(),
+            ]);
+            return false;
         } catch (\Exception $e) {
             $this->logger->error('Exception while sending email', [
                 'cart_id' => $cart->getId(),
@@ -90,7 +121,7 @@ class SmtpEmailService implements EmailServiceInterface
 
         $finalizeUrl = sprintf(
             'http://%s/api/cart/finalize?cart_id=%s',
-            $_SERVER['HTTP_HOST'] ?? 'localhost',
+            $_SERVER['HTTP_HOST'] ?? 'localhost:8000',
             $cart->getId()
         );
 
