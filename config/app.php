@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Application configuration
- * 
- * Loads environment variables and provides centralized configuration access
- */
-
 return [
     'redis' => [
         'host' => getenv('REDIS_HOST') ?: '127.0.0.1',
