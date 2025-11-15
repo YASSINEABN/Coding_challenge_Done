@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="AbandonedCart">
+    <description>PSR-1 and PSR-2 coding standards</description>
+    
+    <!-- Include PSR-1 and PSR-2 standards -->
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
+    
+    <!-- Show progress -->
+    <arg value="p"/>
+    
+    <!-- Use colors -->
+    <arg name="colors"/>
+    
+    <!-- Check all files in src directory -->
+    <file>src</file>
+    <file>public</file>
+    <file>bin</file>
+</ruleset>
